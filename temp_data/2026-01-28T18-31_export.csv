@@ -1,0 +1,11 @@
+﻿,Airline,Date_of_Journey,Source,Destination,Route,Dep_Time,Arrival_Time,Duration,Total_Stops,Additional_Info,Price
+0,IndiGo,24/03/2019,Banglore,New Delhi,BLR → DEL,2026-01-28T22:20:00.000,2026-03-22T01:10:00.000,2h 50m,non-stop,No info,3897
+1,Air India,1/05/2019,Kolkata,Banglore,CCU → IXR → BBI → BLR,2026-01-28T05:50:00.000,2026-01-28T13:15:00.000,7h 25m,2 stops,No info,7662
+2,Jet Airways,9/06/2019,Delhi,Cochin,DEL → LKO → BOM → COK,2026-01-28T09:25:00.000,2026-06-10T04:25:00.000,19h,2 stops,No info,13882
+3,IndiGo,12/05/2019,Kolkata,Banglore,CCU → NAG → BLR,2026-01-28T18:05:00.000,2026-01-28T23:30:00.000,5h 25m,1 stop,No info,6218
+4,IndiGo,01/03/2019,Banglore,New Delhi,BLR → NAG → DEL,2026-01-28T16:50:00.000,2026-01-28T21:35:00.000,4h 45m,1 stop,No info,13302
+5,SpiceJet,24/06/2019,Kolkata,Banglore,CCU → BLR,2026-01-28T09:00:00.000,2026-01-28T11:25:00.000,2h 25m,non-stop,No info,3873
+6,Jet Airways,12/03/2019,Banglore,New Delhi,BLR → BOM → DEL,2026-01-28T18:55:00.000,2026-03-13T10:25:00.000,15h 30m,1 stop,In-flight meal not included,11087
+7,Jet Airways,01/03/2019,Banglore,New Delhi,BLR → BOM → DEL,2026-01-28T08:00:00.000,2026-03-02T05:05:00.000,21h 5m,1 stop,No info,22270
+8,Jet Airways,12/03/2019,Banglore,New Delhi,BLR → BOM → DEL,2026-01-28T08:55:00.000,2026-03-13T10:25:00.000,25h 30m,1 stop,In-flight meal not included,11087
+9,Multiple carriers,27/05/2019,Delhi,Cochin,DEL → BOM → COK,2026-01-28T11:25:00.000,2026-01-28T19:15:00.000,7h 50m,1 stop,No info,8625
