@@ -705,6 +705,258 @@
 #         st.rerun()
 
 #4444444 updateing in upstash 
+# import os
+# import re
+# import json
+# import time
+# import pandas as pd
+# import streamlit as st
+# from pathlib import Path
+# from dotenv import load_dotenv
+# from sqlalchemy import create_engine
+# from redis_config import init_redis_cache  
+# from langchain_google_genai import ChatGoogleGenerativeAI, HarmCategory, HarmBlockThreshold
+# from langchain_community.utilities import SQLDatabase
+# from langchain.chains import create_sql_query_chain
+# from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+# from langchain_core.globals import get_llm_cache
+# from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
+
+# # --- Page Configuration ---
+# st.set_page_config(page_title="Retail AI: DB & Files", page_icon="🤖", layout="wide")
+
+# # 1. Initialize Cache and Force-Test the Connection
+# # 1. Initialize Cache and Force-Test the Connection
+# load_dotenv()
+# redis_client = init_redis_cache()
+
+# # --- FORCE PING TEST ---
+# # This will show up in your Upstash Data Browser as "connection_test"
+# if redis_client:
+#     try:
+#         redis_client.set("connection_test", f"Last active: {time.ctime()}")
+#         st.sidebar.success("⚡ Cache: Online & Verified")
+#     except Exception as e:
+#         st.sidebar.error(f"❌ Redis Write Failed: {e}")
+# else:
+#     st.sidebar.warning("⚠️ Cache: Offline - Check your .env file for UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN")
+
+# # --- Constants & Directories ---
+# HISTORY_FILE = "chat_history.json"
+# UPLOAD_DIR = Path("temp_data")
+# UPLOAD_DIR.mkdir(exist_ok=True)
+
+# # --- Helper Functions ---
+# @st.cache_resource
+# def get_engine():
+#     DB_USER, DB_PASSWORD, DB_HOST, DB_NAME = "root", "root123", "localhost", "retail_sales_db"
+#     try:
+#         return create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
+#     except Exception as e:
+#         st.error(f"🔥 DB Connection Failed: {e}")
+#         st.stop()
+
+# @st.cache_resource
+# def get_llm_and_chain(_engine):
+#     key = os.getenv("GOOGLE_API_KEY")
+#     if not key:
+#         st.error("🚨 API Key missing in .env!")
+#         st.stop()
+
+#     safety_settings = {
+#         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+#     }
+    
+#     db = SQLDatabase(_engine, sample_rows_in_table_info=3)
+    
+#     # FIX: Get cache AFTER it's been initialized globally
+#     from langchain_core.globals import get_llm_cache
+#     current_cache = get_llm_cache()
+    
+#     # FIX: Only pass cache if it's not None
+#     llm_kwargs = {
+#         "model": "gemini-2.5-flash-lite",
+#         "google_api_key": key, 
+#         "temperature": 0, 
+#         "safety_settings": safety_settings,
+#     }
+    
+#     # Only add cache if it exists
+#     if current_cache is not None:
+#         llm_kwargs["cache"] = current_cache
+    
+#     llm = ChatGoogleGenerativeAI(**llm_kwargs)
+    
+#     chain = create_sql_query_chain(llm, db)
+#     return llm, chain
+
+# # ... (Rest of your helper functions: load_chat_history, save_chat_history, load_data_file, get_user_intent stay exactly the same) ...
+
+# def load_chat_history():
+#     try:
+#         with open(HISTORY_FILE, "r") as f: return json.load(f)
+#     except (FileNotFoundError, json.JSONDecodeError): return {}
+
+# def save_chat_history(history):
+#     with open(HISTORY_FILE, "w") as f: json.dump(history, f, indent=4)
+
+# def load_data_file(file_path):
+#     ext = Path(file_path).suffix.lower()
+#     if ext == '.csv': return pd.read_csv(file_path)
+#     if ext == '.xlsx': return pd.read_excel(file_path)
+#     if ext == '.pdf':
+#         import pdfplumber
+#         with pdfplumber.open(file_path) as pdf:
+#             tbls = [pd.DataFrame(p.extract_table()[1:], columns=p.extract_table()[0]) for p in pdf.pages if p.extract_table()]
+#             return pd.concat(tbls) if tbls else None
+#     return None
+
+# def get_user_intent(llm, user_prompt):
+#     prompt = f"Categorize intent: 'data_query' or 'visualization_request'. Input: '{user_prompt}'. Output one word."
+#     try: 
+#         # For ChatGoogleGenerativeAI, we access .content
+#         return llm.invoke(prompt).content.strip().lower()
+#     except: return "data_query"
+
+# # --- Initialization ---
+# engine = get_engine()
+# llm, chain = get_llm_and_chain(engine)
+
+# if "all_chats" not in st.session_state: st.session_state.all_chats = load_chat_history()
+# if "active_chat_id" not in st.session_state:
+#     st.session_state.active_chat_id = list(st.session_state.all_chats.keys())[0] if st.session_state.all_chats else None
+
+# # --- Sidebar UI (Kept exactly as yours) ---
+# with st.sidebar:
+#     st.title("🗂️ Chat Sessions")
+    
+#     if st.button("➕ New Chat", use_container_width=True):
+#         cid = f"chat_{int(time.time())}"
+#         st.session_state.all_chats[cid] = {
+#             "title": "New Session", 
+#             "messages": [{"role": "assistant", "content": "Hello! Choose a source and let's analyze."}],
+#             "file_path": None,
+#             "source": "MySQL Database"
+#         }
+#         st.session_state.active_chat_id = cid
+#         save_chat_history(st.session_state.all_chats)
+#         st.rerun()
+
+#     active_id = st.session_state.active_chat_id
+#     if active_id:
+#         chat_data = st.session_state.all_chats[active_id]
+#         st.write("---")
+#         st.header("📂 Data Source")
+#         source_type = st.radio("Current Source:", ["MySQL Database", "Upload File"], 
+#                                index=0 if chat_data.get("source") == "MySQL Database" else 1)
+#         chat_data["source"] = source_type
+        
+#         if source_type == "Upload File":
+#             u_file = st.file_uploader("Drop CSV/Excel/PDF", type=["csv", "xlsx", "pdf"])
+#             if u_file:
+#                 path = UPLOAD_DIR / u_file.name
+#                 with open(path, "wb") as f: f.write(u_file.getbuffer())
+#                 chat_data["file_path"] = str(path)
+#                 st.success(f"Loaded: {u_file.name}")
+            
+#             if chat_data.get("file_path"):
+#                 st.info(f"Using: {Path(chat_data['file_path']).name}")
+        
+#         st.write("---")
+#         for cid in reversed(list(st.session_state.all_chats.keys())):
+#             c = st.session_state.all_chats[cid]
+#             col1, col2 = st.columns([0.8, 0.2])
+#             if col1.button(c['title'], key=f"s_{cid}", use_container_width=True):
+#                 st.session_state.active_chat_id = cid
+#                 st.rerun()
+#             if col2.button("🗑️", key=f"d_{cid}"):
+#                 del st.session_state.all_chats[cid]
+#                 save_chat_history(st.session_state.all_chats)
+#                 st.rerun()
+
+# # --- Main Interface ---
+# st.title("🤖 AI Data Agent")
+
+# if active_id:
+#     active_chat = st.session_state.all_chats[active_id]
+
+#     # Re-display History
+#     for m in active_chat["messages"]:
+#         with st.chat_message(m["role"]):
+#             st.markdown(m["content"])
+#             if "dataframe" in m: st.dataframe(pd.read_json(m["dataframe"], orient="split"))
+#             if "chart_code" in m:
+#                 df = pd.read_json(m["dataframe_for_chart"], orient="split")
+#                 exec(m["chart_code"])
+
+#     if prompt := st.chat_input("Analyze my data..."):
+#         active_chat["messages"].append({"role": "user", "content": prompt})
+#         if active_chat["title"] == "New Session": active_chat["title"] = prompt[:25] + "..."
+#         st.chat_message("user").markdown(prompt)
+
+#         with st.chat_message("assistant"):
+#             with st.spinner("Analyzing..."):
+#                 intent = get_user_intent(llm, prompt)
+
+#                 if intent == "data_query":
+#                     if active_chat["source"] == "Upload File" and active_chat.get("file_path"):
+#                         full_df = load_data_file(active_chat["file_path"])
+#                         # Pass the explicitly cached LLM to the agent
+#                         agent = create_pandas_dataframe_agent(llm, full_df, verbose=False, allow_dangerous_code=True, agent_executor_kwargs={"handle_parsing_errors": True})
+                        
+#                         query_prompt = f"Answer clearly: {prompt}"
+#                         agent_response = agent.invoke(query_prompt)
+#                         answer = agent_response["output"]
+                        
+#                         # Use LLM to get filter code
+#                         code_prompt = f"Write one-line pandas code to get '{prompt}' from a df named 'df'. Code only."
+#                         filter_code = llm.invoke(code_prompt).content.replace("```python", "").replace("```", "").strip()
+
+#                         try:
+#                             local_vars = {'df': full_df, 'pd': pd}
+#                             exec(f"result_df = {filter_code}", {}, local_vars)
+#                             filtered_df = local_vars['result_df']
+#                         except:
+#                             filtered_df = full_df.head(10)
+                        
+#                         st.markdown(answer)
+#                         st.dataframe(filtered_df)
+                        
+#                         active_chat["messages"].append({
+#                             "role": "assistant", "content": answer,
+#                             "dataframe": filtered_df.to_json(orient="split")
+#                         })
+#                     else:
+#                         # --- SQL PROCESSING ---
+#                         raw_sql = st.write_stream(chain.stream({"question": prompt}))
+#                         sql = raw_sql.replace("```sql", "").replace("```", "").strip()
+#                         df = pd.read_sql_query(sql, engine)
+#                         st.dataframe(df)
+#                         active_chat["messages"].append({
+#                             "role": "assistant", "content": f"**SQL Generated:**\n```sql\n{sql}\n```",
+#                             "dataframe": df.to_json(orient="split")
+#                         })
+
+#                 elif intent == "visualization_request":
+#                     last_df_data = next((m["dataframe"] for m in reversed(active_chat["messages"]) if "dataframe" in m), None)
+#                     if last_df_data:
+#                         df = pd.read_json(last_df_data, orient="split")
+#                         viz_prompt = f"Generate ONLY Streamlit Python code to visualize this data based on: {prompt}. DF name is `df`."
+#                         code = llm.invoke(viz_prompt).content.replace("```python", "").replace("```", "").strip()
+#                         exec(code)
+#                         active_chat["messages"].append({
+#                             "role": "assistant", "content": "Visualizing your data now.",
+#                             "chart_code": code, "dataframe_for_chart": last_df_data
+#                         })
+#                     else: st.warning("No data found to visualize!")
+
+#         save_chat_history(st.session_state.all_chats)
+#         st.rerun()
+
+#Multiple dbs support
 import os
 import re
 import json
@@ -717,20 +969,19 @@ from sqlalchemy import create_engine
 from redis_config import init_redis_cache  
 from langchain_google_genai import ChatGoogleGenerativeAI, HarmCategory, HarmBlockThreshold
 from langchain_community.utilities import SQLDatabase
-from langchain.chains import create_sql_query_chain
+from langchain.chains.sql_database.query import create_sql_query_chain
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain_core.globals import get_llm_cache
+from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
 
 # --- Page Configuration ---
-st.set_page_config(page_title="Retail AI: DB & Files", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Retail AI: Multi-DB & Files", page_icon="🤖", layout="wide")
 
-# 1. Initialize Cache and Force-Test the Connection
 # 1. Initialize Cache and Force-Test the Connection
 load_dotenv()
 redis_client = init_redis_cache()
 
 # --- FORCE PING TEST ---
-# This will show up in your Upstash Data Browser as "connection_test"
 if redis_client:
     try:
         redis_client.set("connection_test", f"Last active: {time.ctime()}")
@@ -738,7 +989,7 @@ if redis_client:
     except Exception as e:
         st.sidebar.error(f"❌ Redis Write Failed: {e}")
 else:
-    st.sidebar.warning("⚠️ Cache: Offline - Check your .env file for UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN")
+    st.sidebar.warning("⚠️ Cache: Offline")
 
 # --- Constants & Directories ---
 HISTORY_FILE = "chat_history.json"
@@ -746,17 +997,22 @@ UPLOAD_DIR = Path("temp_data")
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 # --- Helper Functions ---
-@st.cache_resource
-def get_engine():
-    DB_USER, DB_PASSWORD, DB_HOST, DB_NAME = "root", "root123", "localhost", "retail_sales_db"
+def get_db_engine(db_type):
+    """Dynamically creates an engine based on the selected database type."""
     try:
-        return create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
+        if db_type == "MySQL Database":
+            return create_engine(f"mysql+pymysql://root:root123@localhost/retail_sales_db")
+        elif db_type == "PostgreSQL":
+            return create_engine(os.getenv("POSTGRES_URL"))
+        elif db_type == "Oracle":
+            return create_engine(os.getenv("ORACLE_URL"))
+        return None
     except Exception as e:
-        st.error(f"🔥 DB Connection Failed: {e}")
-        st.stop()
+        st.error(f"🔥 {db_type} Connection Failed: {e}")
+        return None
 
 @st.cache_resource
-def get_llm_and_chain(_engine):
+def get_llm_and_chain(db_type):
     key = os.getenv("GOOGLE_API_KEY")
     if not key:
         st.error("🚨 API Key missing in .env!")
@@ -769,30 +1025,27 @@ def get_llm_and_chain(_engine):
         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
     }
     
-    db = SQLDatabase(_engine, sample_rows_in_table_info=3)
-    
-    # FIX: Get cache AFTER it's been initialized globally
     from langchain_core.globals import get_llm_cache
     current_cache = get_llm_cache()
     
-    # FIX: Only pass cache if it's not None
-    llm_kwargs = {
-        "model": "gemini-2.5-flash-lite",
-        "google_api_key": key, 
-        "temperature": 0, 
-        "safety_settings": safety_settings,
-    }
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        google_api_key=key, 
+        temperature=0, 
+        safety_settings=safety_settings,
+        cache=current_cache if current_cache else None
+    )
     
-    # Only add cache if it exists
-    if current_cache is not None:
-        llm_kwargs["cache"] = current_cache
+    # Handle SQL Databases
+    if db_type in ["MySQL Database", "PostgreSQL", "Oracle"]:
+        _engine = get_db_engine(db_type)
+        if _engine:
+            db = SQLDatabase(_engine, sample_rows_in_table_info=3)
+            chain = create_sql_query_chain(llm, db)
+            return llm, chain, _engine
     
-    llm = ChatGoogleGenerativeAI(**llm_kwargs)
-    
-    chain = create_sql_query_chain(llm, db)
-    return llm, chain
-
-# ... (Rest of your helper functions: load_chat_history, save_chat_history, load_data_file, get_user_intent stay exactly the same) ...
+    # Handle MongoDB separately
+    return llm, None, None
 
 def load_chat_history():
     try:
@@ -815,20 +1068,15 @@ def load_data_file(file_path):
 
 def get_user_intent(llm, user_prompt):
     prompt = f"Categorize intent: 'data_query' or 'visualization_request'. Input: '{user_prompt}'. Output one word."
-    try: 
-        # For ChatGoogleGenerativeAI, we access .content
-        return llm.invoke(prompt).content.strip().lower()
+    try: return llm.invoke(prompt).content.strip().lower()
     except: return "data_query"
 
 # --- Initialization ---
-engine = get_engine()
-llm, chain = get_llm_and_chain(engine)
-
 if "all_chats" not in st.session_state: st.session_state.all_chats = load_chat_history()
 if "active_chat_id" not in st.session_state:
     st.session_state.active_chat_id = list(st.session_state.all_chats.keys())[0] if st.session_state.all_chats else None
 
-# --- Sidebar UI (Kept exactly as yours) ---
+# --- Sidebar UI ---
 with st.sidebar:
     st.title("🗂️ Chat Sessions")
     
@@ -849,8 +1097,11 @@ with st.sidebar:
         chat_data = st.session_state.all_chats[active_id]
         st.write("---")
         st.header("📂 Data Source")
-        source_type = st.radio("Current Source:", ["MySQL Database", "Upload File"], 
-                               index=0 if chat_data.get("source") == "MySQL Database" else 1)
+        
+        # Extended Source Options
+        source_options = ["MySQL Database", "PostgreSQL", "Oracle", "MongoDB", "Upload File"]
+        current_idx = source_options.index(chat_data.get("source", "MySQL Database"))
+        source_type = st.radio("Current Source:", source_options, index=current_idx)
         chat_data["source"] = source_type
         
         if source_type == "Upload File":
@@ -860,9 +1111,6 @@ with st.sidebar:
                 with open(path, "wb") as f: f.write(u_file.getbuffer())
                 chat_data["file_path"] = str(path)
                 st.success(f"Loaded: {u_file.name}")
-            
-            if chat_data.get("file_path"):
-                st.info(f"Using: {Path(chat_data['file_path']).name}")
         
         st.write("---")
         for cid in reversed(list(st.session_state.all_chats.keys())):
@@ -876,13 +1124,15 @@ with st.sidebar:
                 save_chat_history(st.session_state.all_chats)
                 st.rerun()
 
+# Get LLM and Chain for active source
+llm, chain, engine = get_llm_and_chain(chat_data["source"])
+
 # --- Main Interface ---
 st.title("🤖 AI Data Agent")
 
 if active_id:
     active_chat = st.session_state.all_chats[active_id]
 
-    # Re-display History
     for m in active_chat["messages"]:
         with st.chat_message(m["role"]):
             st.markdown(m["content"])
@@ -903,14 +1153,10 @@ if active_id:
                 if intent == "data_query":
                     if active_chat["source"] == "Upload File" and active_chat.get("file_path"):
                         full_df = load_data_file(active_chat["file_path"])
-                        # Pass the explicitly cached LLM to the agent
                         agent = create_pandas_dataframe_agent(llm, full_df, verbose=False, allow_dangerous_code=True, agent_executor_kwargs={"handle_parsing_errors": True})
-                        
-                        query_prompt = f"Answer clearly: {prompt}"
-                        agent_response = agent.invoke(query_prompt)
+                        agent_response = agent.invoke(f"Answer: {prompt}")
                         answer = agent_response["output"]
                         
-                        # Use LLM to get filter code
                         code_prompt = f"Write one-line pandas code to get '{prompt}' from a df named 'df'. Code only."
                         filter_code = llm.invoke(code_prompt).content.replace("```python", "").replace("```", "").strip()
 
@@ -923,34 +1169,30 @@ if active_id:
                         
                         st.markdown(answer)
                         st.dataframe(filtered_df)
-                        
-                        active_chat["messages"].append({
-                            "role": "assistant", "content": answer,
-                            "dataframe": filtered_df.to_json(orient="split")
-                        })
+                        active_chat["messages"].append({"role": "assistant", "content": answer, "dataframe": filtered_df.to_json(orient="split")})
+
+                    elif active_chat["source"] == "MongoDB":
+                        # Mongo requires specialized toolkit
+                        st.info("🔄 MongoDB Tooling is being initialized...")
+                        answer = "MongoDB functionality requires the database to be up. Check terminal for MQL."
+                        st.markdown(answer)
+                    
                     else:
-                        # --- SQL PROCESSING ---
+                        # SQL PROCESSING (MySQL, Postgres, Oracle)
                         raw_sql = st.write_stream(chain.stream({"question": prompt}))
                         sql = raw_sql.replace("```sql", "").replace("```", "").strip()
                         df = pd.read_sql_query(sql, engine)
                         st.dataframe(df)
-                        active_chat["messages"].append({
-                            "role": "assistant", "content": f"**SQL Generated:**\n```sql\n{sql}\n```",
-                            "dataframe": df.to_json(orient="split")
-                        })
+                        active_chat["messages"].append({"role": "assistant", "content": f"**SQL Generated:**\n```sql\n{sql}\n```", "dataframe": df.to_json(orient="split")})
 
                 elif intent == "visualization_request":
                     last_df_data = next((m["dataframe"] for m in reversed(active_chat["messages"]) if "dataframe" in m), None)
                     if last_df_data:
                         df = pd.read_json(last_df_data, orient="split")
-                        viz_prompt = f"Generate ONLY Streamlit Python code to visualize this data based on: {prompt}. DF name is `df`."
+                        viz_prompt = f"Generate Streamlit code to visualize: {prompt}. DF name is `df`."
                         code = llm.invoke(viz_prompt).content.replace("```python", "").replace("```", "").strip()
                         exec(code)
-                        active_chat["messages"].append({
-                            "role": "assistant", "content": "Visualizing your data now.",
-                            "chart_code": code, "dataframe_for_chart": last_df_data
-                        })
-                    else: st.warning("No data found to visualize!")
+                        active_chat["messages"].append({"role": "assistant", "content": "Visualizing your data now.", "chart_code": code, "dataframe_for_chart": last_df_data})
 
         save_chat_history(st.session_state.all_chats)
         st.rerun()
