@@ -969,7 +969,7 @@ from sqlalchemy import create_engine
 from redis_config import init_redis_cache  
 from langchain_google_genai import ChatGoogleGenerativeAI, HarmCategory, HarmBlockThreshold
 from langchain_community.utilities import SQLDatabase
-from langchain.chains.sql_database.query import create_sql_query_chain
+from langchain_classic.chains.sql_database.query import create_sql_query_chain
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain_core.globals import get_llm_cache
 from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
@@ -1014,6 +1014,7 @@ def get_db_engine(db_type):
 @st.cache_resource
 def get_llm_and_chain(db_type):
     key = os.getenv("GOOGLE_API_KEY")
+    print(f"DEBUG: Using API Key: {key[:10]}...{key[-5:]}")
     if not key:
         st.error("🚨 API Key missing in .env!")
         st.stop()
@@ -1029,7 +1030,7 @@ def get_llm_and_chain(db_type):
     current_cache = get_llm_cache()
     
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         google_api_key=key, 
         temperature=0, 
         safety_settings=safety_settings,
@@ -1172,10 +1173,102 @@ if active_id:
                         active_chat["messages"].append({"role": "assistant", "content": answer, "dataframe": filtered_df.to_json(orient="split")})
 
                     elif active_chat["source"] == "MongoDB":
-                        # Mongo requires specialized toolkit
-                        st.info("🔄 MongoDB Tooling is being initialized...")
-                        answer = "MongoDB functionality requires the database to be up. Check terminal for MQL."
+                        # Updated imports for 2026 standards
+                        from langgraph.prebuilt import create_react_agent
+                        from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
+                        
+                        mongo_uri = os.getenv("MONGO_URI")
+                        db_name = os.getenv("MONGO_DB_NAME") or "sql_agent"
+                        
+                        # Initialize the Toolkit
+                        mongo_db = MongoDBDatabase.from_connection_string(mongo_uri, database=db_name)
+                        toolkit = MongoDBDatabaseToolkit(db=mongo_db, llm=llm)
+                        # SYSTEM MESSAGE: Force the agent to only use aggregate queries
+                        system_message = (
+                            "You are a MongoDB expert. When querying the database, "
+                            "you MUST ONLY use the 'aggregate' command. "
+                            "Do not use find() or other simple query methods."
+                        )
+                        # system_prompt = (
+                        #     "You are a MongoDB expert. Use 'aggregate' for queries. "
+                        #     "When you find data, summarize it clearly and mention the specific fields found."
+                        # )
+                        
+                        # Create the ReAct Agent using tools from the toolkit
+                        # This replaces the old create_mongo_agent function
+                        agent = create_react_agent(llm, toolkit.get_tools(),prompt=system_message)
+                        
+                        # Run the query
+                        # ReAct agents expect a list of messages
+                        agent_response = agent.invoke({"messages": [("user", prompt)]})
+                        answer = agent_response["messages"][-1].content 
+                        
+                        # st.markdown(answer)
+                        # active_chat["messages"].append({
+                        #     "role": "assistant", 
+                        #     "content": answer
+                        # })
+                        # --- DATA EXTRACTION LOGIC ---
+                        # We manually fetch the records to display them in a table
+                        try:
+                            # We use the underlying pymongo client to get the raw data for the table
+                            from pymongo import MongoClient
+                            client = MongoClient(mongo_uri)
+                            db = client[db_name]
+                            # Simple extraction: if the prompt is about 'Electronics', we fetch them
+                            # (For a fully dynamic table, the agent can be tasked to return a JSON string)
+                            raw_docs = list(db["products"].find({"category": {"$regex": "Electronics", "$options": "i"}}))
+                            
+                            # Clean up MongoDB IDs for the table
+                            for doc in raw_docs: doc['_id'] = str(doc['_id'])
+                            mongo_df = pd.DataFrame(raw_docs)
+                        except:
+                            mongo_df = pd.DataFrame()
+
                         st.markdown(answer)
+                        
+                        # if not mongo_df.empty:
+                        #     st.write("### 📄 Extracted JSON Data")
+                        #     st.dataframe(mongo_df) # This shows the JSON as a table
+                            
+                        #     active_chat["messages"].append({
+                        #         "role": "assistant", 
+                        #         "content": answer,
+                        #         "dataframe": mongo_df.to_json(orient="split")
+                        #     })
+                        # else:
+                        #     active_chat["messages"].append({"role": "assistant", "content": answer})
+                        try:
+                            client = MongoClient(mongo_uri)
+                            db = client[db_name]
+                            collection = db["products"]
+
+                            # FIX: Dynamically find the category in the prompt
+                            categories = ["Electronics", "Beauty", "Food"]
+                            detected_cat = next((c for c in categories if c.lower() in prompt.lower()), None)
+                            
+                            query_filter = {"category": detected_cat} if detected_cat else {}
+
+                            # Fetch documents
+                            raw_docs = list(collection.find(query_filter))
+                            for doc in raw_docs: 
+                                doc['_id'] = str(doc['_id']) # Clean ID for Streamlit
+
+                            if raw_docs:
+                                mongo_df = pd.DataFrame(raw_docs)
+                                st.write(f"### 📄 {detected_cat or 'All'} Data Results")
+                                st.dataframe(mongo_df)
+                                
+                                active_chat["messages"].append({
+                                    "role": "assistant", 
+                                    "content": answer,
+                                    "dataframe": mongo_df.to_json(orient="split")
+                                })
+                            else:
+                                active_chat["messages"].append({"role": "assistant", "content": answer})
+                        except Exception as e:
+                            st.warning(f"Table Error: {e}")
+                            active_chat["messages"].append({"role": "assistant", "content": answer})
                     
                     else:
                         # SQL PROCESSING (MySQL, Postgres, Oracle)
