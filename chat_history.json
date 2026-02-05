@@ -69,7 +69,7 @@
                 "dataframe": "{\"columns\":[\"TransactionID\",\"Date\",\"CustomerID\",\"Gender\",\"Age\",\"ProductCategory\",\"Quantity\",\"PriceperUnit\",\"TotalAmount\"],\"index\":[0,1,2,3,4,5,6,7,8,9,10,11,12],\"data\":[[2,1677456000000,\"CUST002\",\"Female\",26,\"Clothing\",2,500.0,1000.0],[4,1684627200000,\"CUST004\",\"Male\",37,\"Clothing\",1,500.0,500.0],[7,1678665600000,\"CUST007\",\"Male\",46,\"Clothing\",2,25.0,50.0],[10,1696636800000,\"CUST010\",\"Female\",52,\"Clothing\",4,50.0,200.0],[11,1676332800000,\"CUST011\",\"Male\",23,\"Clothing\",2,50.0,100.0],[14,1673913600000,\"CUST014\",\"Male\",64,\"Clothing\",4,30.0,120.0],[16,1676592000000,\"CUST016\",\"Male\",19,\"Clothing\",3,500.0,1500.0],[17,1682121600000,\"CUST017\",\"Female\",27,\"Clothing\",4,25.0,100.0],[19,1694822400000,\"CUST019\",\"Female\",62,\"Clothing\",2,25.0,50.0],[20,1699142400000,\"CUST020\",\"Male\",22,\"Clothing\",3,300.0,900.0],[22,1697328000000,\"CUST022\",\"Male\",18,\"Clothing\",2,50.0,100.0],[23,1681257600000,\"CUST023\",\"Female\",35,\"Clothing\",4,30.0,120.0],[24,1701216000000,\"CUST024\",\"Female\",49,\"Clothing\",1,300.0,300.0]]}"
             }
         ],
-        "source": "Upload File"
+        "source": "MongoDB"
     },
     "chat_1760077257": {
         "title": "customer data",
@@ -455,6 +455,15 @@
                 "role": "assistant",
                 "content": "The first 5 records from the CSV file are:\n|    |   Unnamed: 0 | Airline     | Date_of_Journey   | Source   | Destination   | Route                 | Dep_Time                | Arrival_Time            | Duration   | Total_Stops   | Additional_Info   |   Price |\n|---:|-------------:|:------------|:------------------|:---------|:--------------|:----------------------|:------------------------|:------------------------|:-----------|:--------------|:------------------|--------:|\n|  0 |            0 | IndiGo      | 24/03/2019        | Banglore | New Delhi     | BLR \u2192 DEL             | 2026-01-28T22:20:00.000 | 2026-03-22T01:10:00.000 | 2h 50m     | non-stop      | No info           |    3897 |\n|  1 |            1 | Air India   | 1/05/2019         | Kolkata  | Banglore      | CCU \u2192 IXR \u2192 BBI \u2192 BLR | 2026-01-28T05:50:00.000 | 2026-01-28T13:15:00.000 | 7h 25m     | 2 stops       | No info           |    7662 |\n|  2 |            2 | Jet Airways | 9/06/2019         | Delhi    | Cochin        | DEL \u2192 LKO \u2192 BOM \u2192 COK | 2026-01-28T09:25:00.000 | 2026-06-10T04:25:00.000 | 19h        | 2 stops       | No info           |   13882 |\n|  3 |            3 | IndiGo      | 12/05/2019        | Kolkata  | Banglore      | CCU \u2192 NAG \u2192 BLR       | 2026-01-28T18:05:00.000 | 2026-01-28T23:30:00.000 | 5h 25m     | 1 stop        | No info           |    6218 |\n|  4 |            4 | IndiGo      | 01/03/2019        | Banglore | New Delhi     | BLR \u2192 NAG \u2192 DEL       | 2026-01-28T16:50:00.000 | 2026-01-28T21:35:00.000 | 4h 45m     | 1 stop        | No info           |   13302 |",
                 "dataframe": "{\"columns\":[\"Unnamed: 0\",\"Airline\",\"Date_of_Journey\",\"Source\",\"Destination\",\"Route\",\"Dep_Time\",\"Arrival_Time\",\"Duration\",\"Total_Stops\",\"Additional_Info\",\"Price\"],\"index\":[0,1,2,3,4],\"data\":[[0,\"IndiGo\",\"24\\/03\\/2019\",\"Banglore\",\"New Delhi\",\"BLR \\u2192 DEL\",\"2026-01-28T22:20:00.000\",\"2026-03-22T01:10:00.000\",\"2h 50m\",\"non-stop\",\"No info\",3897],[1,\"Air India\",\"1\\/05\\/2019\",\"Kolkata\",\"Banglore\",\"CCU \\u2192 IXR \\u2192 BBI \\u2192 BLR\",\"2026-01-28T05:50:00.000\",\"2026-01-28T13:15:00.000\",\"7h 25m\",\"2 stops\",\"No info\",7662],[2,\"Jet Airways\",\"9\\/06\\/2019\",\"Delhi\",\"Cochin\",\"DEL \\u2192 LKO \\u2192 BOM \\u2192 COK\",\"2026-01-28T09:25:00.000\",\"2026-06-10T04:25:00.000\",\"19h\",\"2 stops\",\"No info\",13882],[3,\"IndiGo\",\"12\\/05\\/2019\",\"Kolkata\",\"Banglore\",\"CCU \\u2192 NAG \\u2192 BLR\",\"2026-01-28T18:05:00.000\",\"2026-01-28T23:30:00.000\",\"5h 25m\",\"1 stop\",\"No info\",6218],[4,\"IndiGo\",\"01\\/03\\/2019\",\"Banglore\",\"New Delhi\",\"BLR \\u2192 NAG \\u2192 DEL\",\"2026-01-28T16:50:00.000\",\"2026-01-28T21:35:00.000\",\"4h 45m\",\"1 stop\",\"No info\",13302]]}"
+            },
+            {
+                "role": "user",
+                "content": "give the first 5 records from the csv file"
+            },
+            {
+                "role": "assistant",
+                "content": "The first 5 records from the CSV file are:\n|    |   Unnamed: 0 | Airline     | Date_of_Journey   | Source   | Destination   | Route                 | Dep_Time                | Arrival_Time            | Duration   | Total_Stops   | Additional_Info   |   Price |\n|---:|-------------:|:------------|:------------------|:---------|:--------------|:----------------------|:------------------------|:------------------------|:-----------|:--------------|:------------------|--------:|\n|  0 |            0 | IndiGo      | 24/03/2019        | Banglore | New Delhi     | BLR \u2192 DEL             | 2026-01-28T22:20:00.000 | 2026-03-22T01:10:00.000 | 2h 50m     | non-stop      | No info           |    3897 |\n|  1 |            1 | Air India   | 1/05/2019         | Kolkata  | Banglore      | CCU \u2192 IXR \u2192 BBI \u2192 BLR | 2026-01-28T05:50:00.000 | 2026-01-28T13:15:00.000 | 7h 25m     | 2 stops       | No info           |    7662 |\n|  2 |            2 | Jet Airways | 9/06/2019         | Delhi    | Cochin        | DEL \u2192 LKO \u2192 BOM \u2192 COK | 2026-01-28T09:25:00.000 | 2026-06-10T04:25:00.000 | 19h        | 2 stops       | No info           |   13882 |\n|  3 |            3 | IndiGo      | 12/05/2019        | Kolkata  | Banglore      | CCU \u2192 NAG \u2192 BLR       | 2026-01-28T18:05:00.000 | 2026-01-28T23:30:00.000 | 5h 25m     | 1 stop        | No info           |    6218 |\n|  4 |            4 | IndiGo      | 01/03/2019        | Banglore | New Delhi     | BLR \u2192 NAG \u2192 DEL       | 2026-01-28T16:50:00.000 | 2026-01-28T21:35:00.000 | 4h 45m     | 1 stop        | No info           |   13302 |",
+                "dataframe": "{\"columns\":[\"Unnamed: 0\",\"Airline\",\"Date_of_Journey\",\"Source\",\"Destination\",\"Route\",\"Dep_Time\",\"Arrival_Time\",\"Duration\",\"Total_Stops\",\"Additional_Info\",\"Price\"],\"index\":[0,1,2,3,4],\"data\":[[0,\"IndiGo\",\"24\\/03\\/2019\",\"Banglore\",\"New Delhi\",\"BLR \\u2192 DEL\",\"2026-01-28T22:20:00.000\",\"2026-03-22T01:10:00.000\",\"2h 50m\",\"non-stop\",\"No info\",3897],[1,\"Air India\",\"1\\/05\\/2019\",\"Kolkata\",\"Banglore\",\"CCU \\u2192 IXR \\u2192 BBI \\u2192 BLR\",\"2026-01-28T05:50:00.000\",\"2026-01-28T13:15:00.000\",\"7h 25m\",\"2 stops\",\"No info\",7662],[2,\"Jet Airways\",\"9\\/06\\/2019\",\"Delhi\",\"Cochin\",\"DEL \\u2192 LKO \\u2192 BOM \\u2192 COK\",\"2026-01-28T09:25:00.000\",\"2026-06-10T04:25:00.000\",\"19h\",\"2 stops\",\"No info\",13882],[3,\"IndiGo\",\"12\\/05\\/2019\",\"Kolkata\",\"Banglore\",\"CCU \\u2192 NAG \\u2192 BLR\",\"2026-01-28T18:05:00.000\",\"2026-01-28T23:30:00.000\",\"5h 25m\",\"1 stop\",\"No info\",6218],[4,\"IndiGo\",\"01\\/03\\/2019\",\"Banglore\",\"New Delhi\",\"BLR \\u2192 NAG \\u2192 DEL\",\"2026-01-28T16:50:00.000\",\"2026-01-28T21:35:00.000\",\"4h 45m\",\"1 stop\",\"No info\",13302]]}"
             }
         ],
         "file_path": "temp_data\\2026-01-28T18-31_export.csv",
@@ -556,9 +565,101 @@
                 "role": "assistant",
                 "content": "**SQL Generated:**\n```sql\nSELECT count(*) FROM sales_tb WHERE `ProductCategory` = 'Beauty'\n```",
                 "dataframe": "{\"columns\":[\"count(*)\"],\"index\":[0],\"data\":[[8]]}"
+            },
+            {
+                "role": "user",
+                "content": "how many beauty products are available in dataset ,give the exact count"
+            },
+            {
+                "role": "assistant",
+                "content": "**SQL Generated:**\n```sql\nSELECT count(*) FROM sales_tb WHERE `ProductCategory` = 'Beauty'\n```",
+                "dataframe": "{\"columns\":[\"count(*)\"],\"index\":[0],\"data\":[[8]]}"
+            },
+            {
+                "role": "user",
+                "content": "how many beauty products are available in dataset ,give the exact count"
+            },
+            {
+                "role": "assistant",
+                "content": "**SQL Generated:**\n```sql\nSELECT count(*) FROM sales_tb WHERE `ProductCategory` = 'Beauty'\n```",
+                "dataframe": "{\"columns\":[\"count(*)\"],\"index\":[0],\"data\":[[8]]}"
             }
         ],
         "file_path": null,
-        "source": "MySQL Database"
+        "source": "Upload File"
+    },
+    "chat_1770028103": {
+        "title": "Find all products in the ...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category."
+            },
+            {
+                "role": "user",
+                "content": "What collections are available?"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category"
+            },
+            {
+                "role": "assistant",
+                "content": "The following products in the 'Electronics' category were found: UltraBook Pro and Wireless Mouse."
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Food' category"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one product in the 'Food' category: Organic Tea. It costs $10 and there are 200 units in stock."
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Food' category"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one product in the 'Food' category: Organic Tea. It costs 10 and there are 200 in stock.",
+                "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"69844e40d14b896e549cb485\",\"UltraBook Pro\",\"Electronics\",1500,5],[\"69844e40d14b896e549cb486\",\"Wireless Mouse\",\"Electronics\",25,50]]}"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Food' category"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one product that matches your description: Organic Tea. It costs $10 and there are 200 units in stock.",
+                "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0],\"data\":[[\"69844e40d14b896e549cb488\",\"Organic Tea\",\"Food\",10,200]]}"
+            },
+            {
+                "role": "user",
+                "content": "which product have the stock price 200 "
+            },
+            {
+                "role": "assistant",
+                "content": "I need to know which collection contains the product information. Please provide the collection name.",
+                "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0,1,2,3],\"data\":[[\"69844e40d14b896e549cb485\",\"UltraBook Pro\",\"Electronics\",1500,5],[\"69844e40d14b896e549cb486\",\"Wireless Mouse\",\"Electronics\",25,50],[\"69844e40d14b896e549cb487\",\"Facial Cleanser\",\"Beauty\",15,100],[\"69844e40d14b896e549cb488\",\"Organic Tea\",\"Food\",10,200]]}"
+            }
+        ],
+        "file_path": null,
+        "source": "MongoDB"
     }
 }
