@@ -72,8 +72,8 @@
 import os
 from upstash_redis import Redis
 from dotenv import load_dotenv
-from langchain_community.cache import UpstashRedisCache
-from langchain_core.globals import set_llm_cache  # FIX: Changed from langchain.globals
+from langchain_core.caches import InMemoryCache # Best for immediate testing
+from langchain_core.globals import set_llm_cache
 
 def init_redis_cache():
     load_dotenv()
@@ -105,7 +105,7 @@ def init_redis_cache():
                 cache = UpstashRedisCache(redis_=redis_client)
         
         # Apply the cache globally
-        set_llm_cache(cache)
+        set_llm_cache(InMemoryCache())
         print("✅ Upstash Redis Caching is now ACTIVE")
         
         # Test write to verify it works
