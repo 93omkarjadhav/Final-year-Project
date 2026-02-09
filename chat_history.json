@@ -657,6 +657,315 @@
                 "role": "assistant",
                 "content": "I need to know which collection contains the product information. Please provide the collection name.",
                 "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0,1,2,3],\"data\":[[\"69844e40d14b896e549cb485\",\"UltraBook Pro\",\"Electronics\",1500,5],[\"69844e40d14b896e549cb486\",\"Wireless Mouse\",\"Electronics\",25,50],[\"69844e40d14b896e549cb487\",\"Facial Cleanser\",\"Beauty\",15,100],[\"69844e40d14b896e549cb488\",\"Organic Tea\",\"Food\",10,200]]}"
+            },
+            {
+                "role": "user",
+                "content": "Which product in products collection has the stock 200?"
+            },
+            {
+                "role": "assistant",
+                "content": "[{\"$match\": {\"stock\": 200}}]",
+                "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0,1,2,3],\"data\":[[\"69844e40d14b896e549cb485\",\"UltraBook Pro\",\"Electronics\",1500,5],[\"69844e40d14b896e549cb486\",\"Wireless Mouse\",\"Electronics\",25,50],[\"69844e40d14b896e549cb487\",\"Facial Cleanser\",\"Beauty\",15,100],[\"69844e40d14b896e549cb488\",\"Organic Tea\",\"Food\",10,200]]}"
+            },
+            {
+                "role": "user",
+                "content": "Find all products in the 'Electronics' category"
+            },
+            {
+                "role": "assistant",
+                "content": "[{\"$match\": {\"category\": \"Electronics\"}}]",
+                "dataframe": "{\"columns\":[\"_id\",\"name\",\"category\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"69844e40d14b896e549cb485\",\"UltraBook Pro\",\"Electronics\",1500,5],[\"69844e40d14b896e549cb486\",\"Wireless Mouse\",\"Electronics\",25,50]]}"
+            }
+        ],
+        "file_path": null,
+        "source": "MongoDB"
+    },
+    "chat_1770368173": {
+        "title": "List all products in the ...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "List all products in the 'Electronics' category"
+            }
+        ],
+        "file_path": null,
+        "source": "MongoDB"
+    },
+    "chat_1770372052": {
+        "title": "Give me all electronics p...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "Give me all electronics products"
+            },
+            {
+                "role": "user",
+                "content": "Show me all products and data in products collection "
+            },
+            {
+                "role": "user",
+                "content": "Show me the Electronics category"
+            },
+            {
+                "role": "user",
+                "content": "Show me the Electronics category"
+            },
+            {
+                "role": "user",
+                "content": "Show me the Electronics category"
+            },
+            {
+                "role": "user",
+                "content": "Show me the Electronics categoryproducts"
+            },
+            {
+                "role": "user",
+                "content": "Give me products in the Electronics category."
+            },
+            {
+                "role": "user",
+                "content": "Give me products in the Electronics category."
+            },
+            {
+                "role": "user",
+                "content": "Give me products in the Electronics category."
+            },
+            {
+                "role": "user",
+                "content": "Give me products in the Electronics category."
+            },
+            {
+                "role": "user",
+                "content": "Give me products in the Electronics category."
+            }
+        ],
+        "file_path": null,
+        "source": "MongoDB"
+    },
+    "chat_1770374064": {
+        "title": "Fetch products from the p...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "Fetch products from the products collection where category is Food"
+            },
+            {
+                "role": "assistant",
+                "content": "db.products.aggregate([{'$match': {'category': 'Food'}}])"
+            },
+            {
+                "role": "user",
+                "content": "Fetch products from the products collection where category is Electronics"
+            },
+            {
+                "role": "assistant",
+                "content": "db.products.aggregate([{\\'$match\\': {\\'category\\': \\'Electronics\\'}}])\n"
+            },
+            {
+                "role": "user",
+                "content": "Give me a detailed summary of all electronics products"
+            },
+            {
+                "role": "assistant",
+                "content": "I found 2 electronics products. The UltraBook Pro is the most expensive at $1500 and has 5 units in stock. The Wireless Mouse costs $25 and has 50 units in stock.\n"
+            },
+            {
+                "role": "user",
+                "content": "Fetch products from the products collection where category is Electronics"
+            },
+            {
+                "role": "assistant",
+                "content": "I found 2 electronics products. The UltraBook Pro is the most expensive at $1500, and there are 5 in stock. The Wireless Mouse costs $25, and there are 50 in stock."
+            },
+            {
+                "role": "user",
+                "content": "Fetch products from the products collection where category is Food"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one product in the Food category: Organic Tea, priced at $10, with 200 units in stock."
+            },
+            {
+                "role": "user",
+                "content": "give me the whole json data for the Food category"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one food product in the database. The product is \"Organic Tea,\" which falls under the \"Food\" category. It is priced at $10, and there are 200 units currently in stock.\n"
+            },
+            {
+                "role": "user",
+                "content": "give me the json code now for the Food category"
+            },
+            {
+                "role": "assistant",
+                "content": "I found one food product: Organic Tea. It sells for $10 and we have 200 in stock.\n"
+            },
+            {
+                "role": "user",
+                "content": "give me the products which lie in Electronics category"
+            },
+            {
+                "role": "user",
+                "content": "give me the products which lie in Electronics category"
+            },
+            {
+                "role": "user",
+                "content": "give me the products which lie in Electronics category"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found two products in the Electronics category: UltraBook Pro and Wireless Mouse.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their details including name, price, and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their details including name, price and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details\n\n"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their full details including name, category, price and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, including their names, prices, and stock levels.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            }
+        ],
+        "file_path": null,
+        "source": "MongoDB"
+    },
+    "chat_1770374726": {
+        "title": "analyze the excel sheet a...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "analyze the excel sheet and give me the first 5 rows data"
+            },
+            {
+                "role": "assistant",
+                "content": "|    | Timestamp                  | Email Address               | Full name (First/Middle/Last name)   | Mail ID                     |   Contact Number | Name of your college   | Branch   |   Year of passing |   10th % | 12th %   | Diploma %   |   Engineering/MCA aggregate SGPA till date | Are you ready to join immediately for an Internship cum Placement Drive?   | Gender   | Are you ready to attend the interview at company premsies on Friday, 6th Feb. 2026, 11.00am at company premies?   | Upload your resume here (First Name_Last Name_Branch)              |\n|---:|:---------------------------|:----------------------------|:-------------------------------------|:----------------------------|-----------------:|:-----------------------|:---------|------------------:|---------:|:---------|:------------|-------------------------------------------:|:---------------------------------------------------------------------------|:---------|:------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------|\n|  0 | 2026-02-05 09:56:13.829000 | pravinbangar944@gmail.com   | Pravin Rajendra Bangar               | pravinbangar944@gmail.com   |       8378082754 | TCOER                  | E&TC     |              2026 |     86.4 | Na       | 77.88       |                                       7.98 | Yes                                                                        | Male     | Yes                                                                                                               | https://drive.google.com/open?id=19Qhh8fVyZhSHomYw94Q-GnxCtpdVPmtH |\n|  1 | 2026-02-05 09:59:18.936000 | pranjaldhumal2004@gmail.com | Pranjal Digambar Dhumal              | Pranjaldhumal2004@gmail.com |       9766506484 | TCOER                  | CS       |              2026 |     83   | Na       | 75          |                                       8.24 | Yes                                                                        | Female   | Yes                                                                                                               | https://drive.google.com/open?id=1RYtpFCo_0dPkUwix1bTB3agUDsP1zxYF |\n|  2 | 2026-02-05 10:01:02.446000 | swarajpatil3005@gmail.com   | Swaraj Gajanan Patil                 | swarajpatil3005@gmail.com   |       7447214221 | TAOE                   | CS       |              2026 |     82   | 81       | nan         |                                       7.4  | Yes                                                                        | Male     | nan                                                                                                               | https://drive.google.com/open?id=1KC1Tj3Kv3ngGA27piTafgSPwBDf19z-O |\n|  3 | 2026-02-05 10:12:05.792000 | rutwiktuplondhe7@gmail.com  | Rutwik Kiran Tuplondhe               | rutwiktuplondhe7@gmail.com  |       8421761085 | TAOE                   | CS       |              2026 |     84   | 67       | nan         |                                       7.9  | Yes                                                                        | Male     | Yes                                                                                                               | https://drive.google.com/open?id=1dYpyi4RGqu0DW85E26qOSRHO4rFSdcyn |\n|  4 | 2026-02-05 10:15:01.699000 | sakshikakade85@gmail.com    | Sakshi sudhir kakade                 | sakshikakade85@gmail.com    |       8767221849 | TAOE                   | MCA      |              2026 |     88.6 | 78       | Na          |                                       7.95 | Yes                                                                        | Female   | Yes                                                                                                               | https://drive.google.com/open?id=1pUicG_OZOLhzkZDFbBMCGoMgK8aCksZk |",
+                "dataframe": "{\"columns\":[\"Timestamp\",\"Email Address\",\"Full name (First\\/Middle\\/Last name)\",\"Mail ID\",\"Contact Number\",\"Name of your college\",\"Branch\",\"Year of passing\",\"10th %\",\"12th %\",\"Diploma %\",\"Engineering\\/MCA aggregate SGPA till date\",\"Are you ready to join immediately for an Internship cum Placement Drive?\",\"Gender\",\"Are you ready to attend the interview at company premsies on Friday, 6th Feb. 2026, 11.00am at company premies?\",\"Upload your resume here (First Name_Last Name_Branch)\"],\"index\":[0,1,2,3,4],\"data\":[[1770285373829,\"pravinbangar944@gmail.com\",\"Pravin Rajendra Bangar\",\"pravinbangar944@gmail.com \",8378082754,\"TCOER\",\"E&TC\",2026,86.4,\"Na\",77.88,7.98,\"Yes\",\"Male\",\"Yes\",\"https:\\/\\/drive.google.com\\/open?id=19Qhh8fVyZhSHomYw94Q-GnxCtpdVPmtH\"],[1770285558936,\"pranjaldhumal2004@gmail.com\",\"Pranjal Digambar Dhumal\",\"Pranjaldhumal2004@gmail.com\",9766506484,\"TCOER\",\"CS\",2026,83.0,\"Na\",75,8.24,\"Yes\",\"Female\",\"Yes\",\"https:\\/\\/drive.google.com\\/open?id=1RYtpFCo_0dPkUwix1bTB3agUDsP1zxYF\"],[1770285662446,\"swarajpatil3005@gmail.com\",\"Swaraj Gajanan Patil \",\"swarajpatil3005@gmail.com\",7447214221,\"TAOE\",\"CS\",2026,82.0,81,null,7.4,\"Yes\",\"Male\",null,\"https:\\/\\/drive.google.com\\/open?id=1KC1Tj3Kv3ngGA27piTafgSPwBDf19z-O\"],[1770286325792,\"rutwiktuplondhe7@gmail.com\",\"Rutwik Kiran Tuplondhe \",\"rutwiktuplondhe7@gmail.com\",8421761085,\"TAOE\",\"CS\",2026,84.0,67,null,7.9,\"Yes\",\"Male\",\"Yes\",\"https:\\/\\/drive.google.com\\/open?id=1dYpyi4RGqu0DW85E26qOSRHO4rFSdcyn\"],[1770286501699,\"sakshikakade85@gmail.com\",\"Sakshi sudhir kakade \",\"sakshikakade85@gmail.com\",8767221849,\"TAOE\",\"MCA\",2026,88.6,78,\"Na\",7.95,\"Yes\",\"Female\",\"Yes\",\"https:\\/\\/drive.google.com\\/open?id=1pUicG_OZOLhzkZDFbBMCGoMgK8aCksZk\"]]}"
+            }
+        ],
+        "file_path": "temp_data\\RACCA INFOTECH INTERNSHIP CUM PLACEMENT DRIVE FOR BE CS_IT_E&TC & MCA 2026 BATCH STUDENTS (Responses) (1) (1).xlsx",
+        "source": "Upload File"
+    },
+    "chat_1770394754": {
+        "title": "Find all products where c...",
+        "messages": [
+            {
+                "role": "assistant",
+                "content": "Hello! Choose a source and let's analyze."
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their details including name, price and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found two products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their details including name, price, and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```",
+                "dataframe": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}",
+                "chart_code": "\nst.subheader(\"\ud83d\udcca Charts\")\nst.bar_chart(df.set_index(\"_id\")[\"price\"])\n",
+                "dataframe_for_chart": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Electronics and return the full details"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse, and returned their details including name, price, and stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```",
+                "dataframe": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}",
+                "chart_code": "\nst.subheader(\"\ud83d\udcca Charts\")\nst.bar_chart(df.set_index(\"_id\")[\"price\"])\n",
+                "dataframe_for_chart": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}"
+            },
+            {
+                "role": "user",
+                "content": "Find all products where category is Food"
+            },
+            {
+                "role": "user",
+                "content": "List all products that belong to the Electronics category with their prices\n"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro priced at 1500 and Wireless Mouse priced at 25.\",\n  \"data\": [\n    {\"name\": \"UltraBook Pro\", \"price\": 1500},\n    {\"name\": \"Wireless Mouse\", \"price\": 25}\n  ]\n}\n```",
+                "dataframe": "{\"columns\":[\"name\",\"price\"],\"index\":[0,1],\"data\":[[\"UltraBook Pro\",1500],[\"Wireless Mouse\",25]]}",
+                "chart_code": "\nst.subheader(\"\ud83d\udcca Charts\")\nst.bar_chart(df.set_index(\"name\")[\"price\"])\n",
+                "dataframe_for_chart": "{\"columns\":[\"name\",\"price\"],\"index\":[0,1],\"data\":[[\"UltraBook Pro\",1500],[\"Wireless Mouse\",25]]}"
+            },
+            {
+                "role": "user",
+                "content": "Give me one product from each distinct category"
+            },
+            {
+                "role": "user",
+                "content": "Use MongoDB to list all products where category equals 'Food'"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found one product in the Food category: Organic Tea, priced at 10 with 200 in stock.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4bb\"\n      },\n      \"category\": \"Food\",\n      \"name\": \"Organic Tea\",\n      \"price\": 10,\n      \"stock\": 200\n    }\n  ]\n}\n```",
+                "dataframe": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4bb'}\",\"Food\",\"Organic Tea\",10,200]]}",
+                "chart_code": "\nst.subheader(\"\ud83d\udcca Charts\")\nst.bar_chart(df.set_index(\"_id\")[\"price\"])\n",
+                "dataframe_for_chart": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4bb'}\",\"Food\",\"Organic Tea\",10,200]]}"
+            },
+            {
+                "role": "user",
+                "content": "Use MongoDB to list all products where category equals 'Beauty'"
+            },
+            {
+                "role": "user",
+                "content": "Use MongoDB to list all products where category equals 'Electronics'"
+            },
+            {
+                "role": "assistant",
+                "content": "```json\n{\n  \"summary\": \"I found 2 products in the Electronics category: UltraBook Pro and Wireless Mouse.\",\n  \"data\": [\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b8\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"UltraBook Pro\",\n      \"price\": 1500,\n      \"stock\": 5\n    },\n    {\n      \"_id\": {\n        \"$oid\": \"6985c0252de090aba7d8b4b9\"\n      },\n      \"category\": \"Electronics\",\n      \"name\": \"Wireless Mouse\",\n      \"price\": 25,\n      \"stock\": 50\n    }\n  ]\n}\n```",
+                "dataframe": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}",
+                "chart_code": "\nst.subheader(\"\ud83d\udcca Charts\")\nst.bar_chart(df.set_index(\"_id\")[\"price\"])\n",
+                "dataframe_for_chart": "{\"columns\":[\"_id\",\"category\",\"name\",\"price\",\"stock\"],\"index\":[0,1],\"data\":[[\"{'$oid': '6985c0252de090aba7d8b4b8'}\",\"Electronics\",\"UltraBook Pro\",1500,5],[\"{'$oid': '6985c0252de090aba7d8b4b9'}\",\"Electronics\",\"Wireless Mouse\",25,50]]}"
             }
         ],
         "file_path": null,
