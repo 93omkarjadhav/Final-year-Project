@@ -973,7 +973,7 @@ from langchain_classic.chains.sql_database.query import create_sql_query_chain
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
 from langchain_core.globals import get_llm_cache
 from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
-
+from langchain_openai import ChatOpenAI
 # --- Page Configuration ---
 st.set_page_config(page_title="Retail AI: Multi-DB & Files", page_icon="🤖", layout="wide")
 
@@ -1011,43 +1011,78 @@ def get_db_engine(db_type):
         st.error(f"🔥 {db_type} Connection Failed: {e}")
         return None
 
+# @st.cache_resource
+# def get_llm_and_chain(db_type):
+#     key = os.getenv("GOOGLE_API_KEY")
+#     print(f"DEBUG: Using API Key: {key[:10]}...{key[-5:]}")
+#     if not key:
+#         st.error("🚨 API Key missing in .env!")
+#         st.stop()
+
+#     safety_settings = {
+#         HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+#         HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+#     }
+    
+#     from langchain_core.globals import get_llm_cache
+#     current_cache = get_llm_cache()
+    
+#     llm = ChatGoogleGenerativeAI(
+#         model="gemini-2.0-flash-lite",
+#         google_api_key=key, 
+#         temperature=0, 
+#         safety_settings=safety_settings,
+#         cache=current_cache if current_cache else None
+#     )
+    
+#     # Handle SQL Databases
+#     if db_type in ["MySQL Database", "PostgreSQL", "Oracle"]:
+#         _engine = get_db_engine(db_type)
+#         if _engine:
+#             db = SQLDatabase(_engine, sample_rows_in_table_info=3)
+#             chain = create_sql_query_chain(llm, db)
+#             return llm, chain, _engine
+    
+#     # Handle MongoDB separately
+#     return llm, None, None
 @st.cache_resource
 def get_llm_and_chain(db_type):
-    key = os.getenv("GOOGLE_API_KEY")
-    print(f"DEBUG: Using API Key: {key[:10]}...{key[-5:]}")
+    load_dotenv()
+    # Use OpenRouter credentials from your .env
+    key = os.getenv("OPENROUTER_API_KEY")
+    model_name = os.getenv("OPENROUTER_MODEL") or "google/gemini-2.0-flash-001"
+    
     if not key:
-        st.error("🚨 API Key missing in .env!")
+        st.error("🚨 OpenRouter API Key missing in .env!")
         st.stop()
 
-    safety_settings = {
-        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
-    }
-    
-    from langchain_core.globals import get_llm_cache
-    current_cache = get_llm_cache()
-    
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        google_api_key=key, 
-        temperature=0, 
-        safety_settings=safety_settings,
-        cache=current_cache if current_cache else None
+    # Initialize the model via OpenRouter gateway
+    llm = ChatOpenAI(
+        model=model_name,
+        openai_api_key=key,
+        openai_api_base="https://openrouter.ai/api/v1",
+        default_headers={
+            "HTTP-Referer": "http://localhost:8501", 
+            "X-Title": "Retail AI Multi-DB"
+        },
+        temperature=0
     )
     
-    # Handle SQL Databases
+    # Handle SQL Databases (MySQL, PostgreSQL, Oracle)
     if db_type in ["MySQL Database", "PostgreSQL", "Oracle"]:
         _engine = get_db_engine(db_type)
         if _engine:
             db = SQLDatabase(_engine, sample_rows_in_table_info=3)
+            # Use the classic chain for SQL generation
+            from langchain_classic.chains.sql_database.query import create_sql_query_chain
             chain = create_sql_query_chain(llm, db)
             return llm, chain, _engine
     
-    # Handle MongoDB separately
+    # Return LLM for MongoDB and File Processing
     return llm, None, None
-
+    
 def load_chat_history():
     try:
         with open(HISTORY_FILE, "r") as f: return json.load(f)
@@ -1071,6 +1106,22 @@ def get_user_intent(llm, user_prompt):
     prompt = f"Categorize intent: 'data_query' or 'visualization_request'. Input: '{user_prompt}'. Output one word."
     try: return llm.invoke(prompt).content.strip().lower()
     except: return "data_query"
+
+def extract_json(text: str):
+    """
+    Extracts first valid JSON object from a string.
+    """
+    try:
+        return json.loads(text)
+    except:
+        pass
+
+    # Try to extract JSON from markdown/code/text
+    match = re.search(r'\{[\s\S]*\}', text)
+    if match:
+        return json.loads(match.group())
+
+    raise ValueError("No valid JSON found")
 
 # --- Initialization ---
 if "all_chats" not in st.session_state: st.session_state.all_chats = load_chat_history()
@@ -1173,102 +1224,124 @@ if active_id:
                         active_chat["messages"].append({"role": "assistant", "content": answer, "dataframe": filtered_df.to_json(orient="split")})
 
                     elif active_chat["source"] == "MongoDB":
-                        # Updated imports for 2026 standards
                         from langgraph.prebuilt import create_react_agent
                         from langchain_mongodb.agent_toolkit import MongoDBDatabase, MongoDBDatabaseToolkit
                         
-                        mongo_uri = os.getenv("MONGO_URI")
+                        mongo_uri = os.getenv("MONGO_URI") or "mongodb://localhost:27017/"
                         db_name = os.getenv("MONGO_DB_NAME") or "sql_agent"
-                        
-                        # Initialize the Toolkit
+
+                        # 1. Initialize Connection
                         mongo_db = MongoDBDatabase.from_connection_string(mongo_uri, database=db_name)
                         toolkit = MongoDBDatabaseToolkit(db=mongo_db, llm=llm)
-                        # SYSTEM MESSAGE: Force the agent to only use aggregate queries
-                        system_message = (
-                            "You are a MongoDB expert. When querying the database, "
-                            "you MUST ONLY use the 'aggregate' command. "
-                            "Do not use find() or other simple query methods."
-                        )
-                        # system_prompt = (
-                        #     "You are a MongoDB expert. Use 'aggregate' for queries. "
-                        #     "When you find data, summarize it clearly and mention the specific fields found."
-                        # )
-                        
-                        # Create the ReAct Agent using tools from the toolkit
-                        # This replaces the old create_mongo_agent function
-                        agent = create_react_agent(llm, toolkit.get_tools(),prompt=system_message)
-                        
-                        # Run the query
-                        # ReAct agents expect a list of messages
-                        agent_response = agent.invoke({"messages": [("user", prompt)]})
-                        answer = agent_response["messages"][-1].content 
-                        
-                        # st.markdown(answer)
-                        # active_chat["messages"].append({
-                        #     "role": "assistant", 
-                        #     "content": answer
-                        # })
-                        # --- DATA EXTRACTION LOGIC ---
-                        # We manually fetch the records to display them in a table
+
+                        # 2. THE DESCRIPTIVE PROMPT FIX
+                        system_prompt = (
+        "You are a helpful Retail Data Analyst.\n"
+        "Use the 'mongodb_query' tool to fetch data from MongoDB.\n\n"
+        "RULE: For every user query, you MUST execute exactly ONE MongoDB query using the mongodb_query tool before responding.\n\n"
+        "IMPORTANT OUTPUT FORMAT:\n"
+        "Your FINAL ANSWER must be a VALID JSON object with EXACTLY two keys:\n"
+        "1. 'summary' → A clear, professional natural-language explanation of the results.\n"
+        "2. 'data' → The raw MongoDB query result as JSON (array of documents).\n\n"
+
+        "STRICT RULES:\n"
+        "- ALWAYS return both 'summary' and 'data'\n"
+        "- DO NOT add markdown\n"
+        "- DO NOT explain outside JSON\n"
+        "- DO NOT stringify JSON\n"
+        "- Ensure valid JSON syntax\n\n"
+
+        "Example Output:\n"
+        "{\n"
+        "  \"summary\": \"I found 2 electronics products priced at 10 and 20.\",\n"
+        "  \"data\": [\n"
+        "    {\"name\": \"TV\", \"category\": \"Electronics\", \"price\": 10},\n"
+        "    {\"name\": \"Radio\", \"category\": \"Electronics\", \"price\": 20}\n"
+        "  ]\n"
+        "}\n\n"
+
+        "To query MongoDB, use:\n"
+        "db.products.aggregate([{'$match': {...}}])"
+    )
+
+                        agent = create_react_agent(llm, toolkit.get_tools(), prompt=system_prompt)
+
+                        # 3. Execution Logic
                         try:
-                            # We use the underlying pymongo client to get the raw data for the table
-                            from pymongo import MongoClient
-                            client = MongoClient(mongo_uri)
-                            db = client[db_name]
-                            # Simple extraction: if the prompt is about 'Electronics', we fetch them
-                            # (For a fully dynamic table, the agent can be tasked to return a JSON string)
-                            raw_docs = list(db["products"].find({"category": {"$regex": "Electronics", "$options": "i"}}))
+                            # We use invoke to get the final message in the chain
+                            agent_response = agent.invoke({"messages": [("user", prompt)]})
                             
-                            # Clean up MongoDB IDs for the table
-                            for doc in raw_docs: doc['_id'] = str(doc['_id'])
-                            mongo_df = pd.DataFrame(raw_docs)
-                        except:
-                            mongo_df = pd.DataFrame()
+                            # Extract the LAST message which contains the LLM's final reasoning
+                            final_msg = agent_response["messages"][-1].content
+                            response_json = extract_json(final_msg)
+                            summary = response_json.get("summary", "")
+                            data = response_json.get("data", [])
 
-                        st.markdown(answer)
-                        
-                        # if not mongo_df.empty:
-                        #     st.write("### 📄 Extracted JSON Data")
-                        #     st.dataframe(mongo_df) # This shows the JSON as a table
-                            
-                        #     active_chat["messages"].append({
-                        #         "role": "assistant", 
-                        #         "content": answer,
-                        #         "dataframe": mongo_df.to_json(orient="split")
-                        #     })
-                        # else:
-                        #     active_chat["messages"].append({"role": "assistant", "content": answer})
-                        try:
-                            client = MongoClient(mongo_uri)
-                            db = client[db_name]
-                            collection = db["products"]
+                            st.subheader("🧠 Explanation")
+                            st.write(summary)
 
-                            # FIX: Dynamically find the category in the prompt
-                            categories = ["Electronics", "Beauty", "Food"]
-                            detected_cat = next((c for c in categories if c.lower() in prompt.lower()), None)
-                            
-                            query_filter = {"category": detected_cat} if detected_cat else {}
+                            df = None
+                            chart_code = None
 
-                            # Fetch documents
-                            raw_docs = list(collection.find(query_filter))
-                            for doc in raw_docs: 
-                                doc['_id'] = str(doc['_id']) # Clean ID for Streamlit
-
-                            if raw_docs:
-                                mongo_df = pd.DataFrame(raw_docs)
-                                st.write(f"### 📄 {detected_cat or 'All'} Data Results")
-                                st.dataframe(mongo_df)
-                                
+                            if not data:
+                                st.warning("No data found.")
+                                # Persist at least the JSON response
                                 active_chat["messages"].append({
-                                    "role": "assistant", 
-                                    "content": answer,
-                                    "dataframe": mongo_df.to_json(orient="split")
+                                    "role": "assistant",
+                                    "content": final_msg
                                 })
                             else:
-                                active_chat["messages"].append({"role": "assistant", "content": answer})
+                                import pandas as pd
+                                df = pd.DataFrame(data)
+                                if "_id" in df.columns:
+                                    df["_id"] = df["_id"].astype(str)
+
+                                st.subheader("📋 Table View")
+                                st.dataframe(df, use_container_width=True)
+
+                                st.subheader("📥 Export Data")
+                                csv_data = df.to_csv(index=False).encode("utf-8")
+                                st.download_button(
+                                    label="Download CSV",
+                                    data=csv_data,
+                                    file_name="mongodb_query_result.csv",
+                                    mime="text/csv"
+                                )
+
+                                numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
+                                if numeric_cols:
+                                    st.subheader("📊 Charts")
+                                    x_axis = st.selectbox("Select X-axis", df.columns)
+                                    y_axis = st.selectbox("Select Y-axis (numeric)", numeric_cols)
+                                    st.bar_chart(df.set_index(x_axis)[y_axis])
+
+                                    # Persist a simple chart so it survives rerun
+                                    chart_code = f"""
+st.subheader("📊 Charts")
+st.bar_chart(df.set_index("{x_axis}")["{y_axis}"])
+"""
+
+                                else:
+                                    st.info("No numeric columns available for charting.")
+
+                                # Persist dataframe (and chart if available) in chat history
+                                message = {
+                                    "role": "assistant",
+                                    "content": final_msg,
+                                    "dataframe": df.to_json(orient="split")
+                                }
+                                if chart_code:
+                                    message["chart_code"] = chart_code
+                                    message["dataframe_for_chart"] = df.to_json(orient="split")
+
+                                active_chat["messages"].append(message)
+
                         except Exception as e:
-                            st.warning(f"Table Error: {e}")
-                            active_chat["messages"].append({"role": "assistant", "content": answer})
+                            st.error(f"Reasoning Error: {str(e)}")
+                        except json.JSONDecodeError:
+                            st.error("❌ Agent did not return valid JSON. Please rephrase your question.")
+                    
+                        
                     
                     else:
                         # SQL PROCESSING (MySQL, Postgres, Oracle)
@@ -1289,3 +1362,4 @@ if active_id:
 
         save_chat_history(st.session_state.all_chats)
         st.rerun()
+
